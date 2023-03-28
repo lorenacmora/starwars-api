@@ -43,9 +43,28 @@ def handle_user():
         users_list =[]
         for user in users:
             users_list.append(user.serialize())
-            
-            return jsonify(users_list), 200
-        
+            print(users_list)
+        return jsonify(users_list), 200
+
+@app.route('/user', methods = ['POST'])        
+def add_user():
+    if request.method == "POST":
+        body=request.json
+        email=body.get("email",None)
+        password=body.get("password",None)
+        if email is None or password is None:
+            return jsonify({"message": "faltan datos"}),400
+        else:
+            try:
+                user=User(email=email, password=password)
+                db.session.add(user)
+                db.session.commit()
+                return jsonify({"message": "usuario creado"}),200
+            except Exception as error:
+                return jsonify(error.args[0]),error.args[1]
+
+
+
 @app.route('/user/favorites', methods=['GET'])
 def handleuser_favorites():
     if request.method == 'GET':
@@ -54,6 +73,27 @@ def handleuser_favorites():
         # for favorite in search_favoritebyuser:
         #     favoritebyuser.append(favorite.serialize())
         return (list(map(lambda favorite:favorite.serialize(),search_favoritebyuser)))
+
+@app.route('/people', methods = ['POST'])        
+def add_people():
+    if request.method == "POST":
+        body=request.json
+        name=body.get("name",None)
+        height=body.get("height",None)
+        eye_color=body.get("eye_color",None)
+        hair_color=body.get("hair_color",None)
+        
+        if name is None or height is None or eye_color is None or hair_color is None:
+            return jsonify({"message": "faltan datos"}),400
+        else:
+            try:
+                people=People(name=name, height=height,eye_color=eye_color,hair_color=hair_color)
+                db.session.add(people)
+                db.session.commit()
+                return jsonify({"message": "personaje creado"}),200
+            except Exception as error:
+                return jsonify(error.args[0]),error.args[1]
+
 
 @app.route('/people', methods=["GET"])
 def getpeople():
@@ -74,6 +114,27 @@ def getplanets():
             planets_list.append(planet.serialize())
 
         return jsonify(planets_list), 200
+
+@app.route('/planets', methods = ['POST'])        
+def add_planets():
+    if request.method == "POST":
+        body=request.json
+        name=body.get("name",None)
+        gravity=body.get("gravity",None)
+        population=body.get("population",None)
+        climate=body.get("climate",None)
+        
+        if name is None or gravity is None or population is None or climate is None:
+            return jsonify({"message": "faltan datos"}),400
+        else:
+            try:
+                planets=Planets(name=name,gravity=gravity,population=population,climate=climate)
+                db.session.add(planets)
+                db.session.commit()
+                return jsonify({"message": "planetas creado"}),200
+            except Exception as error:
+                return jsonify(error.args[0]),error.args[1]
+
 
 @app.route('/people/<int:people_id>', methods=["GET"])
 def getpeople_id(people_id=None):
